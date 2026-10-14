@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ma carte</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header id="entete">
+        <div class="cartouche">Nardis DELUGEAU</div>
+        <div class="cartouche">Portfolio 2026</div>
+    </header>
+    <div id="pied">
+        <div class="cartouche">It only misses your work experience on the map !</div>
+    </div>
+    <div id="fond"></div>
+    <svg id="rhumbs"></svg>
+    <div id="monde">
+        <div id="container">
+            <img id="cotes" src="images/cotes.png" alt="">
+            <img id="carte" src="images/map.png" alt="carte">
+            <div id="points"></div>
+        </div>
+    </div>
+    <div id="panneau">
+            <div id="panneau-image-container">
+            </div>
+        <div id="panneau-corps">
+            <h2 id="panneau-titre"></h2>
+            <p id="panneau-date"></p>
+            <p id="panneau-description"></p>
+            <p id="panneau-texte"></p>
+            <ul id="panneau-skills"></ul>
+        </div>
+        <!-- le X des cartes au trésor : deux coups de plume un peu tordus -->
+        <button id="fermer" aria-label="Fermer">
+            <svg viewBox="0 0 32 32">
+                <path d="M5 6 Q 15 14 27 26"/>
+                <path d="M26 5 Q 17 17 6 27"/>
+            </svg>
+        </button>
+    </div>
+    <div id="loupe"><img alt=""></div>
+    <!-- ordre important : points.js déclare les données utilisées par les suivants -->
+    <script src="js/points.js"></script>
+    <script src="js/panneau.js"></script>
+    <script src="js/lieux.js"></script>
+    <script src="js/bateau.js"></script>
+    <script src="js/rhumbs.js"></script>
+</body>
+</html>

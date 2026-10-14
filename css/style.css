@@ -1,0 +1,426 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* lettrage des noms de lieux : Myer Scratch, même source que les symboles (CC0) */
+@font-face {
+    font-family: "Myer Scratch";
+    src: url('../polices/MyerScratch.otf') format('opentype');
+}
+
+/* largeur à l'écran de la carte tournée : elle tient en hauteur ET en largeur */
+:root {
+    --taille-carte: min(120svh, 95vw);
+}
+
+body {
+    height: 100svh;
+    overflow: hidden;
+}
+
+/* empilement : fond < lignes de rhumb < carte < cartouches.
+   fond et carte sont séparés pour que les lignes passent entre les deux */
+#fond {
+    position: fixed;
+    inset: 0;
+    background-image: url('../images/fond.jpg');
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+}
+
+#rhumbs {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+#monde {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* deux cartouches dans les coins du haut, reliés par un trait */
+#entete {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 5;
+    pointer-events: none;
+}
+
+#entete::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    border-top: 2px solid #000000;
+    opacity: 0.6;
+}
+
+#pied {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    z-index: 5;
+    pointer-events: none;
+}
+
+#pied .cartouche {
+    transform: rotate(0.5deg);
+}
+
+/* cartouche : le titre de la carte, posé dans le coin comme sur une carte papier */
+.cartouche {
+    position: relative;
+    padding: 14px 24px;
+    font-family: Georgia, serif;
+    font-size: 24px;
+    /* même papier que le panneau */
+    background-color: #f5f0e8;
+    color: #000000;
+    /* papier posé : ombre nette et décalée, un peu de travers */
+    box-shadow: 3px 4px 0 rgba(20, 30, 50, 0.3);
+    transform: rotate(-1deg);
+}
+
+.cartouche + .cartouche {
+    transform: rotate(0.8deg);
+}
+
+/* double cadre, comme WornFrame dans transcendance */
+.cartouche::before,
+.cartouche::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+}
+
+.cartouche::before {
+    inset: 0;
+    border: 2px solid currentColor;
+    opacity: 0.7;
+}
+
+.cartouche::after {
+    inset: 5px;
+    border: 1px solid currentColor;
+    opacity: 0.6;
+}
+
+/* repris de transcendance : bruit nuageux transformé en masque alpha,
+   les zones sombres du bruit effacent le trait, comme de l'encre usée */
+#entete::before,
+#rhumbs,
+#cotes,
+.cartouche::before,
+.cartouche::after,
+#panneau-titre::after,
+#fermer svg {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='wear'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.03' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -2.6 0 0 0 1.95'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23wear)'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='wear'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.03' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -2.6 0 0 0 1.95'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23wear)'/%3E%3C/svg%3E");
+}
+
+@media (max-width: 500px) {
+    #entete,
+    #pied {
+        left: 10px;
+        right: 10px;
+    }
+
+    #entete {
+        top: 10px;
+    }
+
+    #pied {
+        bottom: 10px;
+    }
+
+    .cartouche {
+        padding: 10px 14px;
+        font-size: 16px;
+    }
+}
+
+#container {
+    position: relative;
+}
+
+#carte {
+    position: relative;
+    height: var(--taille-carte);
+    transform: rotate(90deg);
+    display: block;
+}
+
+/* hachures de côte : cotes.png = map.png avec 120px de marge autour (1133x1543 pour 893x1303),
+   centrée sur la carte et tournée pareil */
+#cotes {
+    position: absolute;
+    left: -13.438%;
+    top: -9.2095%;
+    width: 126.876%;
+    height: 118.419%;
+    transform: rotate(90deg);
+    pointer-events: none;
+}
+
+#points {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.point {
+    position: absolute;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+}
+
+/* hiérarchie des lieux : la hauteur suit l'importance, la largeur suit le dessin.
+   sur un écran 1080p : 110px, 70px, 45px. jamais moins de 24px au doigt */
+.niveau-1 { height: max(48px, calc(var(--taille-carte) * 0.085)); }
+.niveau-2 { height: max(36px, calc(var(--taille-carte) * 0.055)); }
+.niveau-3 { height: max(24px, calc(var(--taille-carte) * 0.035)); }
+
+/* position et transform posées par js/bateau.js à chaque image */
+.bateau {
+    position: absolute;
+    height: calc(var(--taille-carte) * 0.055);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.point img {
+    display: block;
+    height: 100%;
+    width: auto;
+}
+
+/* noms des lieux, écrits sur la carte sous chaque symbole.
+   taille selon le niveau, comme la toponymie : grande ville > bourg > maison */
+.toponyme {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-family: "Myer Scratch", serif;
+    color: #1a1a1a;
+    letter-spacing: 0.05em;
+    line-height: 1;
+}
+
+.niveau-1 .toponyme { font-size: max(14px, calc(var(--taille-carte) * 0.017)); }
+.niveau-2 .toponyme { font-size: max(12px, calc(var(--taille-carte) * 0.013)); }
+.niveau-3 .toponyme { font-size: max(10px, calc(var(--taille-carte) * 0.0105)); }
+
+/* encre usée, comme les cartouches, mais avec un grain plus fin
+   pour que le bruit ronge les lettres sans en effacer une entière */
+.toponyme {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.35' numOctaves='3' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -5 0 0 0 3.8'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.35' numOctaves='3' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -5 0 0 0 3.8'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)'/%3E%3C/svg%3E");
+}
+
+#panneau {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(90vw, 75svh);
+    height: 60svh;
+    background-color: #f5f0e8;
+    border: 1px solid #8b7355;
+    display: none;
+    flex-direction: column;
+    z-index: 20;
+    /* c'est le corps qui défile : la croix reste visible en bas */
+    overflow: hidden;
+    box-shadow: 4px 4px 20px rgba(0,0,0,0.3);
+}
+
+
+#fermer {
+    flex-shrink: 0;
+    align-self: center;
+    margin: 8px 0 14px;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#fermer svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: #8b7355;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transform: rotate(-4deg);
+    /* masque d'usure resserré : à sa taille normale (260px) il effacerait la croix en entier ou pas du tout */
+    -webkit-mask-size: 70px 70px;
+    mask-size: 70px 70px;
+}
+
+#panneau-image-container {
+    width: 100%;
+    height: min(300px, 35svh);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.bande {
+    display: flex;
+    width: max-content;
+    height: 100%;
+}
+
+.bande img {
+    height: 100%;
+    width: auto;
+    cursor: zoom-in;
+}
+
+/* -50% = largeur d'une copie de la liste, voir afficheBande() */
+.bande.defile {
+    animation-name: defile;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+.bande:hover {
+    animation-play-state: paused;
+}
+
+@keyframes defile {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+#loupe {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(59, 46, 30, 0.85);
+    z-index: 40;
+    cursor: zoom-out;
+}
+
+#loupe img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border: 8px solid #f5f0e8;
+}
+
+#panneau-corps {
+    padding: 24px 32px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+#panneau-titre {
+    font-family: Georgia, serif;
+    font-size: 28px;
+    color: #3b2e1e;
+    margin-bottom: 6px;
+    padding-bottom: 8px;
+    position: relative;
+}
+
+/* séparateur usé sous le titre */
+#panneau-titre::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-bottom: 2px solid #8b7355;
+    opacity: 0.8;
+}
+
+#panneau-date {
+    font-family: Georgia, serif;
+    font-size: 13px;
+    color: #8b7355;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+#panneau-description {
+    font-family: Georgia, serif;
+    font-size: 15px;
+    color: #5a4a3a;
+    font-style: italic;
+    margin-bottom: 12px;
+}
+
+#panneau-texte {
+    font-family: Georgia, serif;
+    font-size: 15px;
+    color: #3b2e1e;
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
+#panneau-skills {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+#panneau-skills li {
+    font-family: Georgia, serif;
+    font-size: 13px;
+    color: #5a4a3a;
+    border: 1px solid #c9b99a;
+    padding: 4px 12px;
+    background-color: #ede8de;
+}
+
+#panneau-titre {
+    font-size: 24px;
+    color: #111;
+    margin-top: 10px;
+    align-self: flex-start;
+}
+
+/* téléphone en paysage : peu de hauteur, le panneau prend tout l'écran */
+@media (max-height: 500px) {
+    #panneau {
+        width: 90vw;
+        height: 90svh;
+    }
+
+    #panneau-corps {
+        padding: 16px 20px;
+    }
+}

@@ -1,0 +1,122 @@
+// le panneau qui s'ouvre au clic sur un POI : titre, image ou galerie, texte, compétences
+const panneau = document.getElementById('panneau');
+
+function ouvrePanneau(point) {
+    // 1. Met à jour le panneau
+    document.getElementById('panneau-titre').textContent = point.name;
+    document.getElementById('panneau-description').textContent = point.description;
+    document.getElementById('panneau-date').textContent = point.date;
+
+    // 2. Gère les images
+    const container = document.getElementById('panneau-image-container');
+    container.innerHTML = ''; // Vide le conteneur (et stoppe l'ancienne bande)
+    // pas d'image : pas de grand bloc vide en haut du panneau
+    container.style.display = (point.images || point.image) ? '' : 'none';
+
+    if (point.images) {
+        afficheBande(container, point.images);
+    }
+    else if (point.image) {
+        // Image statique
+        const img = document.createElement('img');
+        img.src = point.image;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        container.appendChild(img);
+    }
+
+    // 3. Charge le texte
+    fetch(point.text)
+        .then(res => res.text())
+        .then(contenu => {
+            document.getElementById('panneau-texte').textContent = contenu;
+        });
+
+    // 4. Affiche le panneau et les compétences
+    document.getElementById('panneau').style.display = 'flex';
+    const skillsEl = document.getElementById('panneau-skills');
+    skillsEl.innerHTML = '';
+    point.skills.forEach(skill => {
+        const li = document.createElement('li');
+        li.textContent = skill;
+        skillsEl.appendChild(li);
+    });
+}
+
+// bande d'images qui défile en boucle.
+// la liste est mise deux fois à la suite : l'animation CSS translate de -50%,
+// donc quand la première copie est sortie la seconde est exactement à sa place.
+function afficheBande(container, images) {
+    const bande = document.createElement('div');
+    bande.classList.add('bande');
+
+    const toutes = images.concat(images);
+    let restantes = toutes.length;
+
+    toutes.forEach(src => {
+        const img = document.createElement('img');
+        // miniature pour la bande, l'original sert à la loupe
+        img.src = src.replace('dessins/', 'dessins/mini/');
+        img.addEventListener('click', () => ouvreLoupe(src));
+        // on attend que toutes les images aient leur largeur avant de lancer
+        img.addEventListener('load', imageArrivee);
+        img.addEventListener('error', imageArrivee);
+        bande.appendChild(img);
+    });
+
+    function imageArrivee() {
+        restantes--;
+        if (restantes > 0)
+            return;
+        // vitesse constante en px/s quelle que soit la largeur totale
+        const duree = (bande.scrollWidth / 2) / 60;
+        bande.style.animationDuration = duree + 's';
+        // départ à un endroit au hasard de la boucle
+        bande.style.animationDelay = -(Math.random() * duree) + 's';
+        bande.classList.add('defile');
+    }
+
+    container.appendChild(bande);
+}
+
+const loupe = document.getElementById('loupe');
+
+function ouvreLoupe(src) {
+    loupe.querySelector('img').src = src;
+    loupe.style.display = 'flex';
+}
+
+loupe.addEventListener('click', (e) => {
+    // sinon le clic remonte au document et ferme aussi le panneau
+    e.stopPropagation();
+    loupe.style.display = 'none';
+    loupe.querySelector('img').src = '';
+});
+
+function fermePanneau() {
+    panneau.style.display = 'none';
+    document.getElementById('panneau-image-container').innerHTML = '';
+}
+
+document.getElementById('fermer').addEventListener('click', fermePanneau);
+
+// échap ferme d'abord la loupe si elle est ouverte, sinon le panneau
+document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape')
+        return;
+    if (loupe.style.display === 'flex') {
+        loupe.style.display = 'none';
+        loupe.querySelector('img').src = '';
+    }
+    else if (panneau.style.display === 'flex') {
+        fermePanneau();
+    }
+});
+
+// ferme le panneau si on clique en dehors
+document.addEventListener('click', (e) => {
+    if (panneau.style.display === 'flex' && !panneau.contains(e.target)) {
+        panneau.style.display = 'none';
+    }
+});
