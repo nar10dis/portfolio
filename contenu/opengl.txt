@@ -1,1 +1,3 @@
-Blablabla
+Quoi de mieux pour essayer de comprendre la pipeline graphique qui régit les images virtuelles ? Je pense aussi que c'était un défi d'essayer de comprendre cette API vieille de 30 ans qu'est OpenGL. J'ai d'abord appris les bases, puis je me suis donné un petit défi : connecter le Game of Life que je venais de faire à l'école, en C++, à la librairie OpenGL afin d'avoir une maîtrise sur l'affichage des cellules mortes ou vivantes ! [À DEMANDER: détails techniques (relire les notes) + lien GitHub]
+
+J'aimerais avoir le temps de m'y reconsacrer, et peut-être plus tard d'être assez à l'aise pour toucher à Vulkan !

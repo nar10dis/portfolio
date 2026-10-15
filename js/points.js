@@ -21,7 +21,7 @@ const points = [
 
     { id: 4, x: 42, y: 35, name:"Mort Aux Rats!", icon: "symboles/myer-113.png", niveau: 1,
     description: "Revue associative artistique, politique et culturelle.", image: "contenu/MAR.jpg",
-    date: "2022-2026", text: "contenu/MAR.txt",
+    date: "2021-2026", text: "contenu/MAR.txt",
     skills: ["Administration", "Edition", "Travail collectif", "Evenementiel"]},
 
     { id: 15, x: 22, y: 30, name:"Littérature", icon: "symboles/myer-96.png", niveau: 3,

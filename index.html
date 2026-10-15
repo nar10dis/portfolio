@@ -14,12 +14,29 @@
     <div id="pied">
         <div class="cartouche">It only misses your work experience on the map !</div>
     </div>
+    <div id="tableau">
+        <img src="symboles/myer-103.png" alt="">
+        <p id="tableau-texte">Carte de mes expériences et de mes projets</p>
+    </div>
     <div id="fond"></div>
     <svg id="rhumbs"></svg>
     <div id="monde">
         <div id="container">
             <img id="cotes" src="images/cotes.png" alt="">
             <img id="carte" src="images/map.png" alt="carte">
+            <!-- les 4 régions : polygones invisibles pour le survol, frontières en pointillés.
+                 coordonnées en % de la carte NON tournée (le svg est tourné comme #carte) -->
+            <svg id="regions" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <polygon class="region" data-nom="Créativité" points="-13.6,110.1 -13.6,38.2 -0.5,38.2 25.2,40 40.4,40 39.6,55.1 55.1,59.6 54.3,67.1 52.3,75.5 48.3,83.6 44.4,92.4 42.7,100.9 42.7,112.5"/>
+                <polygon class="region" data-nom="Code" points="42.7,112.5 42.7,100.9 44.4,92.4 48.3,83.6 52.3,75.5 54.3,67.1 55.1,59.6 60,57.8 66.6,53.8 77.1,51.1 117.8,51.1 117.8,110.1"/>
+                <polygon class="region" data-nom="Environnement" points="55.1,59.6 39.6,55.1 40.4,40 40.8,34.6 39,29 42.2,24.5 52.1,12.8 53.4,6.5 53.4,-11.5 117.8,-11.5 117.8,51.1 77.1,51.1 66.6,53.8 60,57.8"/>
+                <polygon class="region" data-nom="Team Work" points="-13.6,38.2 -13.6,-11.5 53.4,-11.5 53.4,6.5 52.1,12.8 42.2,24.5 39,29 40.8,34.6 40.4,40 25.2,40 -0.5,38.2"/>
+                <polyline class="frontiere" points="42.7,112.5 42.7,100.9 44.4,92.4 48.3,83.6 52.3,75.5 54.3,67.1 55.1,59.6"/>
+                <polyline class="frontiere" points="55.1,59.6 60,57.8 66.6,53.8 77.1,51.1 117.8,51.1"/>
+                <polyline class="frontiere" points="55.1,59.6 39.6,55.1 40.4,40"/>
+                <polyline class="frontiere" points="40.4,40 25.2,40 -0.5,38.2 -13.6,38.2"/>
+                <polyline class="frontiere" points="40.4,40 40.8,34.6 39,29 42.2,24.5 52.1,12.8 53.4,6.5 53.4,-11.5"/>
+            </svg>
             <div id="points"></div>
         </div>
     </div>
@@ -31,15 +48,17 @@
             <p id="panneau-date"></p>
             <p id="panneau-description"></p>
             <p id="panneau-texte"></p>
-            <ul id="panneau-skills"></ul>
         </div>
-        <!-- le X des cartes au trésor : deux coups de plume un peu tordus -->
-        <button id="fermer" aria-label="Fermer">
-            <svg viewBox="0 0 32 32">
-                <path d="M5 6 Q 15 14 27 26"/>
-                <path d="M26 5 Q 17 17 6 27"/>
-            </svg>
-        </button>
+        <div id="panneau-pied">
+            <ul id="panneau-skills"></ul>
+            <!-- le X des cartes au trésor : deux coups de plume un peu tordus -->
+            <button id="fermer" aria-label="Fermer">
+                <svg viewBox="0 0 32 32">
+                    <path d="M5 6 Q 15 14 27 26"/>
+                    <path d="M26 5 Q 17 17 6 27"/>
+                </svg>
+            </button>
+        </div>
     </div>
     <div id="loupe"><img alt=""></div>
     <!-- ordre important : points.js déclare les données utilisées par les suivants -->
@@ -48,5 +67,6 @@
     <script src="js/lieux.js"></script>
     <script src="js/bateau.js"></script>
     <script src="js/rhumbs.js"></script>
+    <script src="js/regions.js"></script>
 </body>
 </html>
