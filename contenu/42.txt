@@ -1,1 +1,6 @@
-Bla bla bla
+J'ai appris beaucoup, beaucoup de choses pendant mes deux années à 42. Comment dire : lors de ma première piscine, je ne savais pas utiliser un terminal ou faire un simple Hello World!. Ça a donc été un parcours de résilience et de détermination. J'ai vite compris que, lorsqu'on dev, on a toujours l'impression que le prochain projet est à s'arracher les cheveux et qu'on ne va pas y arriver, mais ce n'est qu'à moitié vrai, car on y arrive toujours. Mais à chaque projet, c'est un nouveau cap à passer, et c'était dur !
+
+En parlant de caps sans cesse renouvelés, Minishell en a été un très grand. Reproduire un shell presque à l'identique, c'était éprouvant : il y avait tellement de cas à tester que je me souviens d'un Excel avec plus de 500 tests. Et bien sûr, on a décidé de faire les bonus (&& et ||, wildcards...), ce qui ne nous a pas facilité la tâche. Mais apprendre à construire un AST, c'était vraiment intéressant.
+https://github.com/nar10dis/minishell
+
+J'ai aussi commencé 42 lors de l'avènement de nos très chers LLM. Ça a donc été un défi de s'adapter à ces technologies en tant qu'étudiant : ne pas les laisser tout faire à notre place, apprendre tout en se familiarisant avec les avantages de la technologie, en vue d'un monde du travail qui ne cesse pas de prompter... C'est vers la fin de mon cursus que je me suis décidé à tester Claude Code. J'ai mis en place une méthode bien définie dans mes .md, ce qui m'a permis d'utiliser l'IA comme un prof particulier sévère.

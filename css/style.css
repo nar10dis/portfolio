@@ -479,6 +479,10 @@ body {
     white-space: pre-wrap;
 }
 
+#panneau-texte a {
+    color: #3b2e1e;
+}
+
 #panneau-skills {
     list-style: none;
     display: flex;

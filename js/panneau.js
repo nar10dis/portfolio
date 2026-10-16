@@ -30,7 +30,22 @@ function ouvrePanneau(point) {
     fetch(point.text)
         .then(res => res.text())
         .then(contenu => {
-            document.getElementById('panneau-texte').textContent = contenu;
+            // une ligne qui n'est qu'une URL devient un lien, affiché avec le nom du repo
+            const texteEl = document.getElementById('panneau-texte');
+            texteEl.innerHTML = '';
+            contenu.split('\n').forEach((ligne, i) => {
+                if (i > 0)
+                    texteEl.append('\n');
+                if (ligne.startsWith('https://')) {
+                    const a = document.createElement('a');
+                    a.href = ligne;
+                    a.target = '_blank';
+                    a.textContent = ligne.split('/').pop();
+                    texteEl.appendChild(a);
+                }
+                else
+                    texteEl.append(ligne);
+            });
         });
 
     // 4. Affiche le panneau et les compétences

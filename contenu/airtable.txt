@@ -1,0 +1,3 @@
+Airtable, c'est un logiciel en ligne à mi-chemin entre le tableur et la base de données : on y crée des tables comme sur Excel, mais elles peuvent être liées entre elles et déclencher des automatisations.
+
+Je l'ai appris pendant une mission en freelance : un agriculteur voulait passer sa vieille comptabilité d'Excel à Airtable, et l'optimiser au passage. J'ai monté ses tables et des automatisations pour rendre sa gestion comptable la plus pratique possible. Par exemple, chaque vente met directement à jour ses stocks et ses bilans : toutes les tables sont liées entre elles ! On travaille en ce moment sur le remplissage automatique de ses factures.

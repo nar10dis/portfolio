@@ -1,0 +1,8 @@
+Quand j'étais petit, je me souviens m'amuser sur la démo de RPG Maker. Faire des jeux, c'est un peu un rêve de gosse. Maintenant, je m'amuse sur Godot ! J'aime le fait que Godot soit open source, et la communauté autour du logiciel. J'ai fait mon premier jeu en suivant le tuto Dodge the Creeps et je me suis amusé à faire les assets en collage !
+
+J'ai aussi beaucoup aimé faire le projet cub3D à l'école, où j'ai aussi fait les assets, cette fois-ci en pixel art.
+https://github.com/nar10dis/cub3d
+
+Quand il a fallu choisir une idée pour le dernier projet, ft_transcendence, j'ai tout de suite voulu faire un jeu : un Tock, un dérivé des petits chevaux. Le jeu de plateau a permis de se concentrer sur les règles du game engine plus que sur la physique, et je me suis beaucoup amusé à faire un game engine pur en TypeScript (immutable). Coder des IA avec un moteur comme ça, c'était super, car je testais tous les coups sans changer l'état de mon jeu !
+
+Je suis aussi en train d'apprendre Unity et le C#.
