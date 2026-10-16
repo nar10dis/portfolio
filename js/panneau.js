@@ -2,14 +2,13 @@
 const panneau = document.getElementById('panneau');
 
 function ouvrePanneau(point) {
-    // 1. Met à jour le panneau
     document.getElementById('panneau-titre').textContent = point.name;
     document.getElementById('panneau-description').textContent = point.description;
     document.getElementById('panneau-date').textContent = point.date;
 
-    // 2. Gère les images
     const container = document.getElementById('panneau-image-container');
-    container.innerHTML = ''; // Vide le conteneur (et stoppe l'ancienne bande)
+    // vide le conteneur, ce qui stoppe aussi l'ancienne bande
+    container.innerHTML = '';
     // pas d'image : pas de grand bloc vide en haut du panneau
     container.style.display = (point.images || point.image) ? '' : 'none';
 
@@ -17,16 +16,11 @@ function ouvrePanneau(point) {
         afficheBande(container, point.images);
     }
     else if (point.image) {
-        // Image statique
         const img = document.createElement('img');
         img.src = point.image;
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'cover';
         container.appendChild(img);
     }
 
-    // 3. Charge le texte
     fetch(point.text)
         .then(res => res.text())
         .then(contenu => {
@@ -48,8 +42,7 @@ function ouvrePanneau(point) {
             });
         });
 
-    // 4. Affiche le panneau et les compétences
-    document.getElementById('panneau').style.display = 'flex';
+    panneau.style.display = 'flex';
     const skillsEl = document.getElementById('panneau-skills');
     skillsEl.innerHTML = '';
     point.skills.forEach(skill => {
@@ -102,11 +95,15 @@ function ouvreLoupe(src) {
     loupe.style.display = 'flex';
 }
 
+function fermeLoupe() {
+    loupe.style.display = 'none';
+    loupe.querySelector('img').src = '';
+}
+
 loupe.addEventListener('click', (e) => {
     // sinon le clic remonte au document et ferme aussi le panneau
     e.stopPropagation();
-    loupe.style.display = 'none';
-    loupe.querySelector('img').src = '';
+    fermeLoupe();
 });
 
 function fermePanneau() {
@@ -121,8 +118,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape')
         return;
     if (loupe.style.display === 'flex') {
-        loupe.style.display = 'none';
-        loupe.querySelector('img').src = '';
+        fermeLoupe();
     }
     else if (panneau.style.display === 'flex') {
         fermePanneau();
@@ -132,6 +128,6 @@ document.addEventListener('keydown', (e) => {
 // ferme le panneau si on clique en dehors
 document.addEventListener('click', (e) => {
     if (panneau.style.display === 'flex' && !panneau.contains(e.target)) {
-        panneau.style.display = 'none';
+        fermePanneau();
     }
 });

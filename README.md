@@ -23,13 +23,13 @@ work: the panel texts are loaded with `fetch`.
 | `js/points.js`    | Data: the `points` array, one entry per place on the map. |
 | `js/panneau.js`   | Side panel: `ouvrePanneau(point)`, scrolling gallery, zoom-in view (`#loupe`). |
 | `js/lieux.js`     | Puts one symbol per point on the map with its name below, click opens the panel. |
-| `js/zoom.js`      | Zoom and pan (wheel, pinch, drag). |
+| `js/bateau.js`    | Animated boats sailing from a screen edge to an anchorage and back. |
 | `js/rhumbs.js`    | Rhumb lines drawn in SVG. |
+| `js/regions.js`   | Hovering a region writes its name in the frame on the left. |
 | `css/style.css`   | Layout. The map is rotated 90° (`#carte`); points are positioned in % over it. |
 | `images/`         | Map, coast hatching, page background. |
-| `symboles/`       | Place symbols, from the Myer Settlement Brushes (CC0). |
-| `contenu/`        | Per-point image + `.txt` panel text. `contenu/dessins/mini/` holds the gallery thumbnails. |
-| `server.js`       | Local Node static server (`node server.js`, port 8080). Not used on GitHub Pages. |
+| `public/symboles/` | Place symbols, from the Myer Settlement Brushes (CC0). |
+| `public/contenu/`  | Per-point image + `.txt` panel text. `public/contenu/dessins/mini/` holds the gallery thumbnails. A line holding only a `https://` URL becomes a link. |
 | `sources/`        | Not part of the site (brush file, old assets). Not versioned. |
 
 ## Adding or editing a point
@@ -37,20 +37,12 @@ work: the panel texts are loaded with `fetch`.
 Add an entry to the `points` array in `js/points.js`:
 
 ```js
-{ id: 15, x: 50, y: 50, name: "Title", icon: "symboles/myer-92.png", niveau: 3,
-  description: "Short line.", image: "contenu/foo.jpg",
-  date: "2026", text: "contenu/foo.txt",
+{ id: 15, x: 50, y: 50, name: "Title", icon: "public/symboles/myer-92.png", niveau: 3,
+  description: "Short line.", image: "public/contenu/foo.jpg",
+  date: "2026", text: "public/contenu/foo.txt",
   skills: ["Skill A", "Skill B"] },
 ```
 
 - `x`, `y`: position in % of the `#points` overlay.
 - `niveau`: symbol size, 1 = city, 2 = town, 3 = house / mill.
 - Use `images: [...]` instead of `image` for an auto-scrolling gallery.
-- To find coordinates: open the browser console and click on the map — every
-  click logs `x: .., y: ..` relative to the overlay.
-
-## Known loose ends
-
-- Point 8 (Gamedev) reuses the Airtable image, text and skills (placeholder).
-- Point 2 date reads `20021-2026` (typo).
-- Several `.txt` files are still placeholder text (`dessin.txt`, ...).

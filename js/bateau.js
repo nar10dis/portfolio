@@ -3,9 +3,9 @@
 
 // mouillage en % du calque #points (même repère que les POI), decalage en secondes pour qu'ils ne partent pas ensemble
 const bateaux = [
-    { icon: "symboles/myer-141.png", bord: "gauche", mouillageX: -20, mouillageY: 50, decalage: 0 },
-    { icon: "symboles/myer-84.png",  bord: "droite", mouillageX: 127, mouillageY: 45, decalage: 9 },
-    { icon: "symboles/myer-141.png", bord: "bas",    mouillageX: 57,  mouillageY: 78, decalage: 17 },
+    { icon: "public/symboles/myer-141.png", bord: "gauche", mouillageX: -20, mouillageY: 50, decalage: 0 },
+    { icon: "public/symboles/myer-84.png",  bord: "droite", mouillageX: 127, mouillageY: 45, decalage: 9 },
+    { icon: "public/symboles/myer-141.png", bord: "bas",    mouillageX: 57,  mouillageY: 78, decalage: 17 },
 ];
 const vitesse = 30;        // px par seconde
 const pauseCote = 4;       // secondes au mouillage

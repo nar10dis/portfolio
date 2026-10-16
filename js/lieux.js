@@ -17,19 +17,10 @@ points.forEach(point => {
     nom.textContent = point.name;
     div.appendChild(nom);
 
-    // clic — ouvre le panneau
     div.addEventListener('click', (e) => {
         e.stopPropagation();
         ouvrePanneau(point);
     });
 
     conteneur.appendChild(div);
-});
-
-// coords relatives au container pour placer les points : clic sur la carte, résultat dans la console
-document.addEventListener('click', (e) => {
-    const rect = conteneur.getBoundingClientRect();
-    const x = Math.round((e.clientX - rect.left) / rect.width * 100);
-    const y = Math.round((e.clientY - rect.top) / rect.height * 100);
-    console.log(`x: ${x}, y: ${y}`);
 });
