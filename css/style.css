@@ -37,6 +37,9 @@ body {
     overflow: hidden;
     /* pas de pincer de page : le zoom se fait sur la carte, voir js/zoom.js */
     touch-action: pan-x pan-y;
+    /* glisser la carte ne doit pas sélectionner les noms ni les cartouches */
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 /* téléphone tenu droit : on couche tout le site d'un quart de tour,
@@ -219,7 +222,6 @@ body {
    les zones sombres du bruit effacent le trait, comme de l'encre usée */
 #entete::before,
 #rhumbs,
-#cotes,
 .cartouche::before,
 .cartouche::after,
 #panneau-titre::after,
@@ -228,33 +230,40 @@ body {
     mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='wear'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.03' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -2.6 0 0 0 1.95'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23wear)'/%3E%3C/svg%3E");
 }
 
-/* transform posé par js/zoom.js, calculé depuis le coin haut gauche */
+/* la boîte de référence des lieux : la carte NON tournée (893x1303), comme avant la fusion.
+   les % de points.js et de #regions sont dans ce repère.
+   --z, --tx, --ty : la vue, posée par js/zoom.js. --echelle : les lieux grossissent moins que la carte */
 #container {
     position: relative;
-    transform-origin: 0 0;
-}
-
-#carte {
-    position: relative;
+    width: calc(var(--taille-carte) * 893 / 1303);
     height: var(--taille-carte);
-    transform: rotate(90deg);
-    display: block;
+    --z: 1;
+    --tx: 0px;
+    --ty: 0px;
+    --echelle: 1;
 }
 
-/* hachures de côte : cotes.png = map.png avec 120px de marge autour (1133x1543 pour 893x1303),
-   centrée sur la carte et tournée pareil */
-#cotes {
+/* le seul calque agrandi : une image et des polygones, rien de coûteux à redessiner */
+#vue {
     position: absolute;
-    left: -13.438%;
-    top: -9.2095%;
-    width: 126.876%;
-    height: 118.419%;
-    transform: rotate(90deg);
-    pointer-events: none;
+    inset: 0;
+    transform-origin: 0 0;
+    transform: translate(var(--tx), var(--ty)) scale(var(--z));
 }
 
-/* les 4 régions. même boîte et même rotation que #carte, et map.png en masque :
-   la mer est transparente dans map.png, donc frontières et surbrillance s'arrêtent à la côte */
+/* carte.webp est déjà tournée et garde la marge des hachures autour de la carte
+   (120px sur 893x1303 : 1543x1133 une fois tournée), centrée sur la boîte */
+#carte {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(var(--taille-carte) * 1543 / 1303);
+    height: calc(var(--taille-carte) * 1133 / 1303);
+    transform: translate(-50%, -50%);
+}
+
+/* les 4 régions : la boîte non tournée, tournée de 90° comme l'était la carte.
+   map.png en masque : la mer y est transparente, la surbrillance s'arrête à la côte */
 #regions {
     position: absolute;
     inset: 0;
@@ -277,19 +286,7 @@ body {
     fill: rgba(255, 252, 240, 0.3);
 }
 
-/* le svg est étiré (preserveAspectRatio="none") : non-scaling-stroke garde
-   l'épaisseur et les tirets en pixels écran au lieu de les déformer */
-.frontiere {
-    fill: none;
-    stroke: #3b2e1e;
-    stroke-width: 2;
-    stroke-dasharray: 7 6;
-    stroke-linecap: round;
-    vector-effect: non-scaling-stroke;
-    pointer-events: none;
-}
-
-/* #points couvre toute la carte : il laisse passer le survol jusqu'aux régions,
+/* #points couvre toute la carte, hors du zoom : il laisse passer le survol jusqu'aux régions,
    seuls les lieux attrapent la souris */
 #points {
     position: absolute;
@@ -302,6 +299,9 @@ body {
 
 .point {
     position: absolute;
+    /* --x, --y : position sur la carte (js/lieux.js), suivie à travers le zoom */
+    left: calc(var(--tx) + var(--z) * var(--x));
+    top: calc(var(--ty) + var(--z) * var(--y));
     pointer-events: auto;
     cursor: pointer;
     transform: translate(-50%, -50%);
@@ -309,14 +309,14 @@ body {
 
 /* hiérarchie des lieux : la hauteur suit l'importance, la largeur suit le dessin.
    tout est proportionnel à la carte, pour garder le même rendu sur tous les écrans */
-.niveau-1 { height: calc(var(--taille-carte) * 0.085); }
-.niveau-2 { height: calc(var(--taille-carte) * 0.055); }
-.niveau-3 { height: calc(var(--taille-carte) * 0.035); }
+.niveau-1 { height: calc(var(--taille-carte) * 0.085 * var(--echelle)); }
+.niveau-2 { height: calc(var(--taille-carte) * 0.055 * var(--echelle)); }
+.niveau-3 { height: calc(var(--taille-carte) * 0.035 * var(--echelle)); }
 
 /* position et transform posées par js/bateau.js à chaque image */
 .bateau {
     position: absolute;
-    height: calc(var(--taille-carte) * 0.055);
+    height: calc(var(--taille-carte) * 0.055 * var(--echelle));
     transform: translate(-50%, -50%);
     pointer-events: none;
 }
@@ -341,9 +341,9 @@ body {
     line-height: 1;
 }
 
-.niveau-1 .toponyme { font-size: calc(var(--taille-carte) * 0.017); }
-.niveau-2 .toponyme { font-size: calc(var(--taille-carte) * 0.013); }
-.niveau-3 .toponyme { font-size: calc(var(--taille-carte) * 0.0105); }
+.niveau-1 .toponyme { font-size: calc(var(--taille-carte) * 0.017 * var(--echelle)); }
+.niveau-2 .toponyme { font-size: calc(var(--taille-carte) * 0.013 * var(--echelle)); }
+.niveau-3 .toponyme { font-size: calc(var(--taille-carte) * 0.0105 * var(--echelle)); }
 
 /* encre usée, comme les cartouches, mais avec un grain plus fin
    pour que le bruit ronge les lettres sans en effacer une entière */
@@ -366,6 +366,9 @@ body {
     z-index: 20;
     /* c'est le corps qui défile : la croix reste visible en bas */
     overflow: hidden;
+    /* le texte du panneau, lui, se sélectionne */
+    -webkit-user-select: text;
+    user-select: text;
     box-shadow: calc(var(--u) * 4) calc(var(--u) * 4) calc(var(--u) * 20) rgba(0,0,0,0.3);
 }
 

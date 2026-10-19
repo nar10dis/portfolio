@@ -5,8 +5,9 @@ const conteneur = document.getElementById('points');
 points.forEach(point => {
     const div = document.createElement('div');
     div.classList.add('point', 'niveau-' + point.niveau);
-    div.style.left = point.x + '%';
-    div.style.top = point.y + '%';
+    // la position à l'écran est calculée en CSS à partir de celle-ci et du zoom (.point)
+    div.style.setProperty('--x', point.x + '%');
+    div.style.setProperty('--y', point.y + '%');
 
     const img = document.createElement('img');
     img.src = point.icon;

@@ -1,42 +1,76 @@
-// zoom maison sur la carte : molette, Ctrl +/-/0, pincer et glisser au doigt ou à la souris.
-// le zoom du navigateur ne change rien à l'affichage (tailles en --u, voir style.css) :
-// c'est ici qu'on zoome, et seulement la carte.
-// la vue est un translate + scale posé sur #container : carte, régions, lieux et bateaux suivent.
+// zoom maison sur la carte : Ctrl + molette (et pincer du trackpad), Ctrl +/-/0,
+// molette pour se déplacer, glisser à la souris, pincer et glisser au doigt.
+// le zoom du navigateur ne change rien à l'affichage (tailles en --u, voir style.css).
+//
+// seul #vue (l'image de la carte et les régions) est agrandi. les lieux et les bateaux sont
+// seulement déplacés, et grossissent moins (--echelle) : c'est ce qui rend le zoom fluide.
+// la vue est posée en variables CSS sur #container, que .point et #vue lisent.
 
 const monde = document.getElementById('monde');
-const carte = document.getElementById('container');
+const boite = document.getElementById('container');
 const vue = { z: 1, x: 0, y: 0 };
 const zoomMax = 4;
+
+// tailles lues une fois par redimensionnement : les relire à chaque événement
+// forcerait le navigateur à recalculer la mise en page en plein geste
+let mesures;
+
+function mesure() {
+    const t = boite.offsetHeight;   // --taille-carte
+    mesures = {
+        gauche: boite.offsetLeft,
+        haut: boite.offsetTop,
+        w: boite.offsetWidth,
+        h: t,
+        // l'image de la carte, centrée sur la boîte (voir #carte dans style.css)
+        carteW: t * 1543 / 1303,
+        carteH: t * 1133 / 1303,
+    };
+}
 
 function borne(v, min, max) {
     return Math.min(max, Math.max(min, v));
 }
 
-function appliqueVue() {
-    // la carte ne part pas au large : elle peut glisser d'autant qu'elle a grossi.
-    // #carte est tourné de 90° : à l'écran, la largeur de la carte est la hauteur de la boîte
-    const w = carte.offsetWidth;
-    const h = carte.offsetHeight;
-    const mx = (vue.z - 1) * h / 2;
-    const my = (vue.z - 1) * w / 2;
-    // décalage du centre de la carte par rapport à sa place sans zoom
-    const dx = vue.x + (vue.z - 1) * w / 2;
-    const dy = vue.y + (vue.z - 1) * h / 2;
+// la carte ne part pas au large : son centre peut s'écarter d'autant qu'elle a grossi
+function borneVue() {
+    const m = mesures;
+    const mx = (vue.z - 1) * m.carteW / 2;
+    const my = (vue.z - 1) * m.carteH / 2;
+    const dx = vue.x + (vue.z - 1) * m.w / 2;
+    const dy = vue.y + (vue.z - 1) * m.h / 2;
     vue.x += borne(dx, -mx, mx) - dx;
     vue.y += borne(dy, -my, my) - dy;
-    carte.style.transform = `translate(${vue.x}px, ${vue.y}px) scale(${vue.z})`;
-    monde.classList.toggle('zoome', vue.z > 1);
+}
+
+// une seule écriture par image, même si la molette envoie 100 événements par seconde
+let prevu = false;
+
+function planifie() {
+    borneVue();
+    if (prevu)
+        return;
+    prevu = true;
+    requestAnimationFrame(() => {
+        prevu = false;
+        boite.style.setProperty('--z', vue.z);
+        boite.style.setProperty('--tx', vue.x + 'px');
+        boite.style.setProperty('--ty', vue.y + 'px');
+        // carte x4 : lieux x1.5
+        boite.style.setProperty('--echelle', Math.pow(vue.z, 0.3));
+        monde.classList.toggle('zoome', vue.z > 1);
+    });
 }
 
 // zoome en gardant immobile le point p (repère du site, voir versSite)
 function zoomAutour(z, p) {
     z = borne(z, 1, zoomMax);
-    const ox = p.x - carte.offsetLeft;
-    const oy = p.y - carte.offsetTop;
+    const ox = p.x - mesures.gauche;
+    const oy = p.y - mesures.haut;
     vue.x = ox - (ox - vue.x) * z / vue.z;
     vue.y = oy - (oy - vue.y) * z / vue.z;
     vue.z = z;
-    appliqueVue();
+    planifie();
 }
 
 function centreEcran() {
@@ -44,15 +78,23 @@ function centreEcran() {
     return { x: ecran.w / 2, y: ecran.h / 2 };
 }
 
-// molette et pincer du trackpad (que le navigateur envoie comme Ctrl + molette)
+// Ctrl + molette zoome (le pincer du trackpad arrive aussi comme ça), la molette seule déplace :
+// sur trackpad, faire défiler à deux doigts ne doit pas zoomer dans tous les sens
 window.addEventListener('wheel', (e) => {
     // sur le panneau la molette fait défiler le texte
     if (e.target.closest('#panneau, #loupe'))
         return;
     e.preventDefault();
     // deltaMode 1 : en lignes et pas en pixels (souris sous Firefox)
-    const pas = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
-    zoomAutour(vue.z * Math.exp(-pas * 0.002), versSite(e.clientX, e.clientY));
+    const pas = e.deltaMode === 1 ? 16 : 1;
+    if (e.ctrlKey) {
+        zoomAutour(vue.z * Math.exp(-e.deltaY * pas * 0.002), versSite(e.clientX, e.clientY));
+    }
+    else {
+        vue.x -= e.deltaX * pas;
+        vue.y -= e.deltaY * pas;
+        planifie();
+    }
 }, { passive: false });
 
 document.addEventListener('keydown', (e) => {
@@ -107,15 +149,15 @@ monde.addEventListener('pointermove', (e) => {
         if (doigts.size < 2 && Math.hypot(g.c.x - depart.x, g.c.y - depart.y) < 6)
             return;
         glisse = true;
+        // capturé seulement maintenant : capturer dès l'appui volerait le clic aux lieux
+        doigts.forEach((_, id) => monde.setPointerCapture(id));
     }
-    // capturé seulement maintenant : capturer dès l'appui volerait le clic aux lieux
-    monde.setPointerCapture(e.pointerId);
 
     if (doigts.size > 1 && avant.ecart > 0)
         zoomAutour(vue.z * g.ecart / avant.ecart, g.c);
     vue.x += g.c.x - avant.c.x;
     vue.y += g.c.y - avant.c.y;
-    appliqueVue();
+    planifie();
     avant = g;
 });
 
@@ -134,7 +176,15 @@ monde.addEventListener('click', (e) => {
         e.stopPropagation();
 }, true);
 
+// sinon le navigateur lance son glisser-déposer d'image et interrompt le geste
+monde.addEventListener('dragstart', (e) => e.preventDefault());
+
 // Safari iOS ignore user-scalable=no : on lui refuse le pincer de page à la main
 document.addEventListener('gesturestart', (e) => e.preventDefault());
 
-window.addEventListener('resize', appliqueVue);
+window.addEventListener('resize', () => {
+    mesure();
+    planifie();
+});
+
+mesure();

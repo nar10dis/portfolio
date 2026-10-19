@@ -1,5 +1,6 @@
 // des bateaux partent d'un bord de l'écran, vont mouiller au large d'une côte,
-// puis repartent par où ils sont venus. ils sont dans #points, dans le repère de la carte.
+// puis repartent par où ils sont venus. leur trajet est calculé dans le repère de la carte,
+// puis passé à travers le zoom (js/zoom.js) au moment de les placer.
 
 // mouillage en % du calque #points (même repère que les POI), decalage en secondes pour qu'ils ne partent pas ensemble
 const bateaux = [
@@ -20,15 +21,14 @@ bateaux.forEach(b => {
 });
 
 // point de départ juste hors de l'écran, en px du calque #points.
-// #container est centré dans #monde, qui fait la taille de l'écran : ses offsets donnent où sont les bords,
-// puis on défait le zoom (js/zoom.js) pour les avoir dans le repère de la carte
+// #container est centré dans #monde, qui fait la taille de l'écran : sa place donne où sont les bords,
+// puis on défait le zoom pour les avoir dans le repère de la carte
 function departBateau(b, lw, lh) {
-    const c = document.getElementById('container');
-    const marge = b.img.offsetWidth;
+    const marge = b.img.offsetWidth / vue.z;
     const ecran = tailleEcran();
-    const gauche = (-c.offsetLeft - vue.x) / vue.z;
-    const droite = (ecran.w - c.offsetLeft - vue.x) / vue.z;
-    const bas = (ecran.h - c.offsetTop - vue.y) / vue.z;
+    const gauche = (-mesures.gauche - vue.x) / vue.z;
+    const droite = (ecran.w - mesures.gauche - vue.x) / vue.z;
+    const bas = (ecran.h - mesures.haut - vue.y) / vue.z;
     if (b.bord === "gauche")
         return { x: gauche - marge, y: (b.mouillageY / 100 + 0.08) * lh };
     if (b.bord === "droite")
@@ -37,8 +37,8 @@ function departBateau(b, lw, lh) {
 }
 
 function positionBateau(b, temps) {
-    const lw = conteneur.offsetWidth;
-    const lh = conteneur.offsetHeight;
+    const lw = mesures.w;
+    const lh = mesures.h;
     const depart = departBateau(b, lw, lh);
     const arriveeX = b.mouillageX / 100 * lw;
     const arriveeY = b.mouillageY / 100 * lh;
@@ -80,24 +80,24 @@ function positionBateau(b, temps) {
     };
 }
 
+// mouvement réduit : les bateaux restent au mouillage, mais suivent quand même le zoom
+const immobiles = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 function animeBateaux(ms) {
     const temps = ms / 1000;
     bateaux.forEach(b => {
-        const p = positionBateau(b, temps);
-        const roulis = Math.sin(temps * 1.3 + b.decalage) * 3;
-        b.img.style.left = p.x + 'px';
-        b.img.style.top = p.y + 'px';
+        let p = { x: b.mouillageX / 100 * mesures.w, y: b.mouillageY / 100 * mesures.h, sens: 1 };
+        let roulis = 0;
+        if (!immobiles) {
+            p = positionBateau(b, temps);
+            roulis = Math.sin(temps * 1.3 + b.decalage) * 3;
+        }
+        // repère de la carte -> écran, comme .point dans style.css
+        b.img.style.left = vue.x + vue.z * p.x + 'px';
+        b.img.style.top = vue.y + vue.z * p.y + 'px';
         b.img.style.transform = `translate(-50%, -50%) rotate(${roulis}deg) scaleX(${p.sens})`;
     });
     requestAnimationFrame(animeBateaux);
 }
 
-if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    bateaux.forEach(b => {
-        b.img.style.left = b.mouillageX + '%';
-        b.img.style.top = b.mouillageY + '%';
-    });
-}
-else {
-    requestAnimationFrame(animeBateaux);
-}
+requestAnimationFrame(animeBateaux);
