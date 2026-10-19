@@ -10,24 +10,67 @@
     src: url('../polices/MyerScratch.otf') format('opentype');
 }
 
-/* largeur à l'écran de la carte tournée : elle tient en hauteur ET en largeur */
+/* --vw et --vh : 1% de la largeur et de la hauteur de l'écran tel qu'on le lit.
+   le site les utilise à la place de vw et svh : quand il est couché (voir plus bas),
+   il suffit de les échanger.
+   --u remplace le px : 1px sur un écran de 1600x900, proportionnel ailleurs.
+   rien n'est en px (sauf les traits de 1px), donc le zoom du navigateur ne grossit rien (le zoom, c'est js/zoom.js).
+   largeur à l'écran de la carte tournée : elle tient en hauteur ET en largeur */
 :root {
-    --taille-carte: min(120svh, 95vw);
+    --vw: 1vw;
+    --vh: 1svh;
+    --u: min(calc(var(--vw) * 100 / 1600), calc(var(--vh) * 100 / 900));
+    --taille-carte: min(calc(var(--vh) * 120), calc(var(--vw) * 95));
+}
+
+/* écran tactile (téléphone, tablette) : on le tient plus près, tout est un peu plus gros.
+   pointer et orientation ne changent pas avec le zoom, contrairement à max-width */
+@media (pointer: coarse) {
+    :root {
+        --u: min(calc(var(--vw) * 100 / 1000), calc(var(--vh) * 100 / 560));
+    }
 }
 
 body {
-    height: 100svh;
+    width: calc(var(--vw) * 100);
+    height: calc(var(--vh) * 100);
     overflow: hidden;
+    /* pas de pincer de page : le zoom se fait sur la carte, voir js/zoom.js */
+    touch-action: pan-x pan-y;
+}
+
+/* téléphone tenu droit : on couche tout le site d'un quart de tour,
+   on le lit en penchant le téléphone vers la gauche. tourné pour de vrai en paysage,
+   la condition est fausse et le site s'affiche normalement.
+   le transform fait de body le repère des éléments position: fixed, ils tournent avec lui.
+   garder la même condition que estCouche() dans js/ecran.js */
+@media (orientation: portrait) and (pointer: coarse) {
+    :root {
+        --vw: 1svh;
+        --vh: 1vw;
+    }
+
+    /* le body tourné ne doit pas faire apparaître de barre de défilement */
+    html {
+        overflow: hidden;
+    }
+
+    body {
+        transform-origin: top left;
+        /* lu de droite à gauche : quart de tour autour du coin haut gauche,
+           puis on ramène le site, qui est parti à gauche de l'écran */
+        transform: translateX(100vw) rotate(90deg);
+    }
 }
 
 /* tableau à gauche : nom de la région survolée, sinon le titre de la carte.
    le texte est posé dans l'ouverture du cadre (myer-103.png, 254x287) */
 #tableau {
     position: fixed;
-    left: 24px;
+    left: calc(var(--u) * 24);
     top: 50%;
     transform: translateY(-50%) rotate(-2deg);
-    width: clamp(120px, 13vw, 240px);
+    width: calc(var(--u) * 210);
     z-index: 5;
     pointer-events: none;
 }
@@ -55,7 +98,7 @@ body {
     align-items: center;
     text-align: center;
     font-family: "Myer Scratch", serif;
-    font-size: clamp(10px, 1.05vw, 19px);
+    font-size: calc(var(--u) * 17);
     line-height: 1.2;
     color: #1a1a1a;
 }
@@ -65,7 +108,7 @@ body {
 #fond {
     position: fixed;
     inset: 0;
-    background-image: url('../images/fond.jpg');
+    background-image: url('../public/images/fond.jpg');
     background-size: cover;
     background-position: center;
     z-index: 0;
@@ -87,14 +130,20 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    /* les gestes sur la carte sont gérés par js/zoom.js */
+    touch-action: none;
+}
+
+#monde.zoome {
+    cursor: grab;
 }
 
 /* deux cartouches dans les coins du haut, reliés par un trait */
 #entete {
     position: fixed;
-    top: 16px;
-    left: 16px;
-    right: 16px;
+    top: calc(var(--u) * 16);
+    left: calc(var(--u) * 16);
+    right: calc(var(--u) * 16);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -108,15 +157,15 @@ body {
     left: 0;
     right: 0;
     top: 50%;
-    border-top: 2px solid #000000;
+    border-top: calc(var(--u) * 2) solid #000000;
     opacity: 0.6;
 }
 
 #pied {
     position: fixed;
-    bottom: 16px;
-    left: 16px;
-    right: 16px;
+    bottom: calc(var(--u) * 16);
+    left: calc(var(--u) * 16);
+    right: calc(var(--u) * 16);
     display: flex;
     justify-content: center;
     text-align: center;
@@ -131,14 +180,14 @@ body {
 /* cartouche : le titre de la carte, posé dans le coin comme sur une carte papier */
 .cartouche {
     position: relative;
-    padding: 14px 24px;
+    padding: calc(var(--u) * 14) calc(var(--u) * 24);
     font-family: Georgia, serif;
-    font-size: 24px;
+    font-size: calc(var(--u) * 24);
     /* même papier que le panneau */
     background-color: #f5f0e8;
     color: #000000;
     /* papier posé : ombre nette et décalée, un peu de travers */
-    box-shadow: 3px 4px 0 rgba(20, 30, 50, 0.3);
+    box-shadow: calc(var(--u) * 3) calc(var(--u) * 4) 0 rgba(20, 30, 50, 0.3);
     transform: rotate(-1deg);
 }
 
@@ -156,12 +205,12 @@ body {
 
 .cartouche::before {
     inset: 0;
-    border: 2px solid currentColor;
+    border: calc(var(--u) * 2) solid currentColor;
     opacity: 0.7;
 }
 
 .cartouche::after {
-    inset: 5px;
+    inset: calc(var(--u) * 5);
     border: 1px solid currentColor;
     opacity: 0.6;
 }
@@ -179,29 +228,10 @@ body {
     mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='wear'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.03' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -2.6 0 0 0 1.95'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23wear)'/%3E%3C/svg%3E");
 }
 
-@media (max-width: 500px) {
-    #entete,
-    #pied {
-        left: 10px;
-        right: 10px;
-    }
-
-    #entete {
-        top: 10px;
-    }
-
-    #pied {
-        bottom: 10px;
-    }
-
-    .cartouche {
-        padding: 10px 14px;
-        font-size: 16px;
-    }
-}
-
+/* transform posé par js/zoom.js, calculé depuis le coin haut gauche */
 #container {
     position: relative;
+    transform-origin: 0 0;
 }
 
 #carte {
@@ -231,8 +261,8 @@ body {
     width: 100%;
     height: 100%;
     transform: rotate(90deg);
-    -webkit-mask-image: url('../images/map.png');
-    mask-image: url('../images/map.png');
+    -webkit-mask-image: url('../public/images/map.png');
+    mask-image: url('../public/images/map.png');
     -webkit-mask-size: 100% 100%;
     mask-size: 100% 100%;
 }
@@ -278,10 +308,10 @@ body {
 }
 
 /* hiérarchie des lieux : la hauteur suit l'importance, la largeur suit le dessin.
-   sur un écran 1080p : 110px, 70px, 45px. jamais moins de 24px au doigt */
-.niveau-1 { height: max(48px, calc(var(--taille-carte) * 0.085)); }
-.niveau-2 { height: max(36px, calc(var(--taille-carte) * 0.055)); }
-.niveau-3 { height: max(24px, calc(var(--taille-carte) * 0.035)); }
+   tout est proportionnel à la carte, pour garder le même rendu sur tous les écrans */
+.niveau-1 { height: calc(var(--taille-carte) * 0.085); }
+.niveau-2 { height: calc(var(--taille-carte) * 0.055); }
+.niveau-3 { height: calc(var(--taille-carte) * 0.035); }
 
 /* position et transform posées par js/bateau.js à chaque image */
 .bateau {
@@ -311,9 +341,9 @@ body {
     line-height: 1;
 }
 
-.niveau-1 .toponyme { font-size: max(14px, calc(var(--taille-carte) * 0.017)); }
-.niveau-2 .toponyme { font-size: max(12px, calc(var(--taille-carte) * 0.013)); }
-.niveau-3 .toponyme { font-size: max(10px, calc(var(--taille-carte) * 0.0105)); }
+.niveau-1 .toponyme { font-size: calc(var(--taille-carte) * 0.017); }
+.niveau-2 .toponyme { font-size: calc(var(--taille-carte) * 0.013); }
+.niveau-3 .toponyme { font-size: calc(var(--taille-carte) * 0.0105); }
 
 /* encre usée, comme les cartouches, mais avec un grain plus fin
    pour que le bruit ronge les lettres sans en effacer une entière */
@@ -327,8 +357,8 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: min(90vw, 75svh);
-    height: 60svh;
+    width: min(calc(var(--vw) * 90), calc(var(--vh) * 75));
+    height: calc(var(--vh) * 60);
     background-color: #f5f0e8;
     border: 1px solid #8b7355;
     display: none;
@@ -336,7 +366,7 @@ body {
     z-index: 20;
     /* c'est le corps qui défile : la croix reste visible en bas */
     overflow: hidden;
-    box-shadow: 4px 4px 20px rgba(0,0,0,0.3);
+    box-shadow: calc(var(--u) * 4) calc(var(--u) * 4) calc(var(--u) * 20) rgba(0,0,0,0.3);
 }
 
 /* pied fixe : les compétences à gauche, la croix à droite, ne défile pas avec le texte */
@@ -344,16 +374,16 @@ body {
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 10px 20px 10px 32px;
+    gap: calc(var(--u) * 16);
+    padding: calc(var(--u) * 10) calc(var(--u) * 20) calc(var(--u) * 10) calc(var(--u) * 32);
     border-top: 1px solid #c9b99a;
 }
 
 #fermer {
     flex-shrink: 0;
     margin-left: auto;
-    width: 34px;
-    height: 34px;
+    width: calc(var(--u) * 34);
+    height: calc(var(--u) * 34);
     padding: 0;
     background: none;
     border: none;
@@ -369,8 +399,8 @@ body {
     stroke-linecap: round;
     transform: rotate(-4deg);
     /* masque d'usure resserré : à sa taille normale (260px) il effacerait la croix en entier ou pas du tout */
-    -webkit-mask-size: 70px 70px;
-    mask-size: 70px 70px;
+    -webkit-mask-size: calc(var(--u) * 70) calc(var(--u) * 70);
+    mask-size: calc(var(--u) * 70) calc(var(--u) * 70);
 }
 
 /* 1/3 image, 2/3 texte (#panneau-corps a flex: 2), quelle que soit la taille de l'écran */
@@ -427,13 +457,13 @@ body {
 }
 
 #loupe img {
-    max-width: 90vw;
-    max-height: 90vh;
-    border: 8px solid #f5f0e8;
+    max-width: calc(var(--vw) * 90);
+    max-height: calc(var(--vh) * 90);
+    border: calc(var(--u) * 8) solid #f5f0e8;
 }
 
 #panneau-corps {
-    padding: 24px 32px;
+    padding: calc(var(--u) * 24) calc(var(--u) * 32);
     flex: 2 1 0;
     min-height: 0;
     overflow-y: auto;
@@ -441,11 +471,11 @@ body {
 
 #panneau-titre {
     font-family: Georgia, serif;
-    font-size: 24px;
+    font-size: calc(var(--u) * 24);
     color: #111;
-    margin-top: 10px;
-    margin-bottom: 6px;
-    padding-bottom: 8px;
+    margin-top: calc(var(--u) * 10);
+    margin-bottom: calc(var(--u) * 6);
+    padding-bottom: calc(var(--u) * 8);
     position: relative;
 }
 
@@ -456,30 +486,30 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    border-bottom: 2px solid #8b7355;
+    border-bottom: calc(var(--u) * 2) solid #8b7355;
     opacity: 0.8;
 }
 
 #panneau-date {
     font-family: Georgia, serif;
-    font-size: 13px;
+    font-size: calc(var(--u) * 13);
     color: #8b7355;
-    letter-spacing: 2px;
+    letter-spacing: calc(var(--u) * 2);
     text-transform: uppercase;
-    margin-bottom: 16px;
+    margin-bottom: calc(var(--u) * 16);
 }
 
 #panneau-description {
     font-family: Georgia, serif;
-    font-size: 15px;
+    font-size: calc(var(--u) * 15);
     color: #5a4a3a;
     font-style: italic;
-    margin-bottom: 12px;
+    margin-bottom: calc(var(--u) * 12);
 }
 
 #panneau-texte {
     font-family: Georgia, serif;
-    font-size: 15px;
+    font-size: calc(var(--u) * 15);
     color: #3b2e1e;
     line-height: 1.8;
     white-space: pre-wrap;
@@ -493,30 +523,30 @@ body {
     list-style: none;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: calc(var(--u) * 8);
 }
 
 #panneau-skills li {
     font-family: Georgia, serif;
-    font-size: 13px;
+    font-size: calc(var(--u) * 13);
     color: #5a4a3a;
     border: 1px solid #c9b99a;
-    padding: 4px 12px;
+    padding: calc(var(--u) * 4) calc(var(--u) * 12);
     background-color: #ede8de;
 }
 
-/* téléphone en paysage : peu de hauteur, le panneau prend tout l'écran */
-@media (max-height: 500px) {
+/* écran tactile : le panneau prend presque tout l'écran */
+@media (pointer: coarse) {
     #panneau {
-        width: 90vw;
-        height: 90svh;
+        width: calc(var(--vw) * 90);
+        height: calc(var(--vh) * 90);
     }
 
     #panneau-corps {
-        padding: 16px 20px;
+        padding: calc(var(--u) * 16) calc(var(--u) * 20);
     }
 
     #panneau-pied {
-        padding: 6px 12px 6px 20px;
+        padding: calc(var(--u) * 6) calc(var(--u) * 12) calc(var(--u) * 6) calc(var(--u) * 20);
     }
 }

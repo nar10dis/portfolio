@@ -5,12 +5,12 @@ const points = [
     { id: 1, x: 18, y: 39, name:"Prépa Henri IV", icon: "public/symboles/myer-102.png", niveau: 2,
     description: "Classe prépa littéraire au Henri IV.", image: "public/contenu/prepa.png",
     date: "2019-2021", text: "public/contenu/prepa.txt",
-    skills: ["Rigueur de travail", "Esprit critique", "Éloquence orale/écrite", "Culture générale"]},
+    skills: ["Rigueur de travail", "Esprit critique", "Éloquence", "Culture générale"]},
 
     { id: 2, x: -4, y: 36, name:"Musique", icon: "public/symboles/myer-93.png", niveau: 2,
     description: "De la musique !", image: "public/contenu/son.jpg",
     date: "", text: "public/contenu/son.txt",
-    skills: ["FL Studio", "Impudeur", "Poésie", "Travail d'équipe"]},
+    skills: ["FL Studio", "Créativité", "Poésie", "Travail d'équipe"]},
 
     { id: 3, x: 5, y: 25, name:"Dessins", icon: "public/symboles/myer-112.png", niveau: 1,
     description: "Résultats de beaucoup d'années de gribouillage.",
@@ -28,7 +28,7 @@ const points = [
     { id: 5, x: 21, y: 61, name:"42", icon: "public/symboles/myer-111.png", niveau: 1,
     description: "Tronc commun de l'école 42.", image: "public/contenu/42.jpg",
     date: "2024-2026", text: "public/contenu/42.txt",
-    skills: ["Patience", "Autonomie", "C, C++, JS"]},
+    skills: ["Patience", "Autonomie", "Rigueur", "Algorithmie"]},
 
     { id: 6, x: 1, y: 48, name:"Programmation graphique", icon: "public/symboles/myer-129.png", niveau: 2,
     description: "OpenGL et shaders sur Godot.", image: "public/contenu/graphique.gif",
@@ -41,9 +41,9 @@ const points = [
     skills: ["Administration", "Comptabilité", "JavaScript", "Freelance"]},
 
     { id: 8, x: 25, y: 52, name: "Gamedev", icon: "public/symboles/myer-99.png", niveau: 2,
-    description: "Godot, cub3D et un Tock en TypeScript.", image: "public/contenu/airtable.png",
+    description: "Godot, cub3D et un Tock en TypeScript.", image: "public/contenu/gamedev.jpg",
     date: "", text: "public/contenu/gamedev.txt",
-    skills: ["Godot", "TypeScript", "Pixel art", "Collage"]},
+    skills: ["Godot", "Programmation graphique", "Création d'assets"]},
 
     // team work
     { id: 9, x: 113, y: 40, name:"Fashion Week", icon: "public/symboles/myer-100.png", niveau: 2,
@@ -54,7 +54,7 @@ const points = [
     { id: 10, x: 95, y: 27, name:"Restauration", icon: "public/symboles/myer-101.png", niveau: 2,
     description: "Serveur en salle dans plusieurs restaurants parisiens.", image: "public/contenu/restau.jpg",
     date: "2019-2026", text: "public/contenu/restau.txt",
-    skills: ["Réactivité", "Sympathie", "Management", "Comptabilité", "Gestion de rush"]},
+    skills: ["Réactivité", "Management", "Comptabilité", "Gestion de rush"]},
 
     // environnement
     { id: 12, x: 59, y: 51, name:"Licence géo", icon: "public/symboles/myer-116.png", niveau: 1,

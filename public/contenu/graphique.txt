@@ -1,7 +1,7 @@
 Les shaders, je trouve ça cool. J'adore voir des compétitions de shaders comme Shader Showdown, des sessions de live coding avec du VJing en live, les démos sur Shadertoy. Mais j'aimerais bien concilier ça avec le jeu vidéo aussi, donc j'ai essayé de faire des shaders de texture sur Godot : eau, brouillard, effet drapeau. Oui, j'ai eu le malheur de faire une boucle while... Ma pauvre carte graphique...
 https://github.com/nar10dis/Godot-shaders
 
-Quoi de mieux pour approfondir ma compréhension de la pipeline graphique qui régit les images virtuelles ? C'était un défi d'essayer de comprendre cette API vieille de 30 ans qu'est OpenGL. Après avoir passé plusieurs jours à essayer d'imprimer un triangle, j'ai décidé d'imprimer les cellules de mon Game of Life, fait à l'école en C++... Bonne chance... J'ai dû écrire mes shaders en GLSL, bien initialiser les VAO, VBO, EBO... Bref, c'était galère !
+Aussi, pour approfondir ma compréhension de la pipeline graphique qui régit les images virtuelles, je me suis mis au défi d'essayer de comprendre cette API vieille de 30 ans : OpenGL. Après avoir passé plusieurs jours à essayer d'imprimer un triangle, j'ai décidé d'imprimer les cellules de mon Game of Life, fait à l'école en C++... Bonne chance... J'ai dû écrire mes shaders en GLSL, bien initialiser les VAO, VBO, EBO... Bref, c'était galère !
 https://github.com/nar10dis/faith
 
 J'aimerais avoir le temps de m'y reconsacrer, et peut-être plus tard d'être assez à l'aise pour toucher à Vulkan !

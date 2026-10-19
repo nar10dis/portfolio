@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Ma carte</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -22,8 +22,8 @@
     <svg id="rhumbs"></svg>
     <div id="monde">
         <div id="container">
-            <img id="cotes" src="images/cotes.png" alt="">
-            <img id="carte" src="images/map.png" alt="carte">
+            <img id="cotes" src="public/images/cotes.png" alt="">
+            <img id="carte" src="public/images/map.png" alt="carte">
             <!-- les 4 régions : polygones invisibles pour le survol, frontières en pointillés.
                  coordonnées en % de la carte NON tournée (le svg est tourné comme #carte) -->
             <svg id="regions" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -60,10 +60,12 @@
         </div>
     </div>
     <div id="loupe"><img alt=""></div>
-    <!-- ordre important : points.js déclare les données utilisées par les suivants -->
+    <!-- ordre important : ecran.js et points.js déclarent ce qu'utilisent les suivants -->
+    <script src="js/ecran.js"></script>
     <script src="js/points.js"></script>
     <script src="js/panneau.js"></script>
     <script src="js/lieux.js"></script>
+    <script src="js/zoom.js"></script>
     <script src="js/bateau.js"></script>
     <script src="js/rhumbs.js"></script>
     <script src="js/regions.js"></script>

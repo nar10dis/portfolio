@@ -3,8 +3,9 @@
 const rhumbs = document.getElementById('rhumbs');
 
 function traceRhumbs() {
-    const cx = window.innerWidth / 2;
-    const cy = window.innerHeight / 2;
+    const ecran = tailleEcran();
+    const cx = ecran.w / 2;
+    const cy = ecran.h / 2;
     const loin = Math.hypot(cx, cy);
     let traits = '';
 
@@ -16,7 +17,9 @@ function traceRhumbs() {
     }
     document.querySelectorAll('.cartouche').forEach(c => {
         const r = c.getBoundingClientRect();
-        traits += ligne(cx, cy, r.left + r.width / 2, r.top + r.height / 2, 0.7);
+        // le centre du cartouche reste son centre une fois tourné
+        const centre = versSite(r.left + r.width / 2, r.top + r.height / 2);
+        traits += ligne(cx, cy, centre.x, centre.y, 0.7);
     });
     rhumbs.innerHTML = traits;
 }

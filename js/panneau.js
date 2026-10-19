@@ -113,6 +113,8 @@ function fermePanneau() {
 
 document.getElementById('fermer').addEventListener('click', fermePanneau);
 
+defilementCouche(document.getElementById('panneau-corps'));
+
 // échap ferme d'abord la loupe si elle est ouverte, sinon le panneau
 document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape')

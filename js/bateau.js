@@ -20,15 +20,20 @@ bateaux.forEach(b => {
 });
 
 // point de départ juste hors de l'écran, en px du calque #points.
-// #container est centré dans #monde, qui fait la taille de l'écran : ses offsets donnent où sont les bords
+// #container est centré dans #monde, qui fait la taille de l'écran : ses offsets donnent où sont les bords,
+// puis on défait le zoom (js/zoom.js) pour les avoir dans le repère de la carte
 function departBateau(b, lw, lh) {
     const c = document.getElementById('container');
     const marge = b.img.offsetWidth;
+    const ecran = tailleEcran();
+    const gauche = (-c.offsetLeft - vue.x) / vue.z;
+    const droite = (ecran.w - c.offsetLeft - vue.x) / vue.z;
+    const bas = (ecran.h - c.offsetTop - vue.y) / vue.z;
     if (b.bord === "gauche")
-        return { x: -c.offsetLeft - marge, y: (b.mouillageY / 100 + 0.08) * lh };
+        return { x: gauche - marge, y: (b.mouillageY / 100 + 0.08) * lh };
     if (b.bord === "droite")
-        return { x: window.innerWidth - c.offsetLeft + marge, y: (b.mouillageY / 100 - 0.08) * lh };
-    return { x: (b.mouillageX / 100 - 0.15) * lw, y: window.innerHeight - c.offsetTop + marge };
+        return { x: droite + marge, y: (b.mouillageY / 100 - 0.08) * lh };
+    return { x: (b.mouillageX / 100 - 0.15) * lw, y: bas + marge };
 }
 
 function positionBateau(b, temps) {
