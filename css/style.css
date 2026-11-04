@@ -107,8 +107,13 @@ body {
 }
 
 /* contact à droite, en face du tableau : le téléphone chiffre sous chiffre,
-   linkedin dessous dans un cartouche carré */
+   linkedin dessous dans un cartouche carré.
+   la colonne doit tenir entre l'en-tête et le pied (~90u chacun) : la taille des chiffres
+   se calcule sur la hauteur qui reste. 17 caractères à 0.9em = 15.3em de haut */
 #contact {
+    --contact-marge: 20;    /* padding haut/bas du téléphone */
+    --contact-ecart: 22;    /* entre téléphone et linkedin */
+    --contact-linkedin: 64; /* côté du carré linkedin */
     position: fixed;
     right: calc(var(--u) * 24);
     top: 50%;
@@ -116,8 +121,18 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: calc(var(--u) * 22);
+    gap: calc(var(--u) * var(--contact-ecart));
     z-index: 5;
+}
+
+/* téléphone (tenu droit ou couché) : peu de hauteur, on serre la colonne */
+@media (pointer: coarse) {
+    #contact {
+        right: calc(var(--u) * 16);
+        --contact-marge: 14;
+        --contact-ecart: 14;
+        --contact-linkedin: 52;
+    }
 }
 
 /* ombre droit en dessous, la même pour les deux. drop-shadow plutôt que box-shadow :
@@ -133,7 +148,12 @@ body {
     writing-mode: vertical-rl;
     text-orientation: upright;
     transform: rotate(-1deg);
-    padding: calc(var(--u) * 20) calc(var(--u) * 18);
+    padding: calc(var(--u) * var(--contact-marge)) calc(var(--u) * 18);
+    /* 24u au plus, moins si la hauteur manque (180u réservés à l'en-tête et au pied) */
+    font-size: min(calc(var(--u) * 24),
+                   calc((var(--vh) * 100
+                         - var(--u) * (180 + 2 * var(--contact-marge) + var(--contact-ecart) + var(--contact-linkedin)))
+                        / 15.3));
     line-height: 1;
     letter-spacing: -0.1em;
 }
@@ -142,8 +162,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: calc(var(--u) * 64);
-    height: calc(var(--u) * 64);
+    width: calc(var(--u) * var(--contact-linkedin));
+    height: calc(var(--u) * var(--contact-linkedin));
     padding: 0;
     transform: rotate(1.5deg);
 }
