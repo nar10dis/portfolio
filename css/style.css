@@ -109,7 +109,9 @@ body {
 /* contact à droite, en face du tableau : le téléphone chiffre sous chiffre,
    linkedin dessous dans un cartouche carré.
    la colonne doit tenir entre l'en-tête et le pied (~90u chacun) : la taille des chiffres
-   se calcule sur la hauteur qui reste. 17 caractères à 0.9em = 15.3em de haut */
+   se calcule sur la hauteur qui reste. en vertical upright, l'avance d'un caractère dépend
+   du navigateur et de la police (0.9em dans Firefox, plus avec une police de remplacement
+   haute). on compte large : 17 caractères à ~1.18em = 20em de haut */
 #contact {
     --contact-marge: 20;    /* padding haut/bas du téléphone */
     --contact-ecart: 22;    /* entre téléphone et linkedin */
@@ -149,11 +151,11 @@ body {
     text-orientation: upright;
     transform: rotate(-1deg);
     padding: calc(var(--u) * var(--contact-marge)) calc(var(--u) * 18);
-    /* 24u au plus, moins si la hauteur manque (180u réservés à l'en-tête et au pied) */
-    font-size: min(calc(var(--u) * 24),
+    /* 20u au plus, moins si la hauteur manque (180u réservés à l'en-tête et au pied) */
+    font-size: min(calc(var(--u) * 20),
                    calc((var(--vh) * 100
                          - var(--u) * (180 + 2 * var(--contact-marge) + var(--contact-ecart) + var(--contact-linkedin)))
-                        / 15.3));
+                        / 20));
     line-height: 1;
     letter-spacing: -0.1em;
 }
