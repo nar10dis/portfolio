@@ -639,3 +639,112 @@ body {
         padding: calc(var(--u) * 6) calc(var(--u) * 12) calc(var(--u) * 6) calc(var(--u) * 20);
     }
 }
+
+/* ---------- intro (js/intro.js) ---------- */
+
+/* pendant l'intro, la carte est agrandie d'un bloc (transform posé par js/intro.js),
+   sur son propre calque : rien n'est redessiné pendant le dézoom */
+body.intro #monde {
+    opacity: 0;
+    transform-origin: 50% 50%;
+    will-change: transform;
+}
+
+/* les lieux ne sont pas zoomés : ils apparaissent une fois la carte posée */
+body.intro #points {
+    visibility: hidden;
+}
+
+/* l'habillage est presque à 0 plutôt qu'à 0 : le navigateur le dessine dès le chargement
+   (masques d'encre usée compris) et le faire apparaître ne coûte plus rien */
+body.intro :is(#rhumbs, #entete, #pied, #tableau, #contact) {
+    opacity: 0.001;
+    pointer-events: none;
+}
+
+body:is(.intro, .pose) :is(#rhumbs, #entete, #pied, #tableau, #contact, .cartouche, .point, .bateau) {
+    will-change: opacity;
+}
+
+#intro {
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+    overflow: hidden;
+    touch-action: none;
+}
+
+/* position, taille et virages posés par js/intro.js ; le roulis tourne tout seul */
+#intro-bateau {
+    position: absolute;
+    translate: -50% -50%;
+}
+
+#intro-bateau img {
+    display: block;
+    height: calc(var(--taille-carte) * 0.055);   /* comme les bateaux de la carte */
+    animation: roulis 3.2s ease-in-out infinite;
+}
+
+@keyframes roulis {
+    0%, 100% { transform: rotate(-3deg) translateY(0); }
+    50%      { transform: rotate(3deg) translateY(calc(var(--u) * -4)); }
+}
+
+/* « scroll down » qui clignote lentement : sous le bateau au début (#intro-scroll),
+   en bas de l'écran si on s'arrête de scroller (#intro-relance) */
+.scroll-down {
+    left: 50%;
+    translate: -50% 0;
+    font-family: "Myer Scratch", serif;
+    font-size: calc(var(--u) * 26);
+    line-height: 1.3;
+    text-align: center;
+    color: #1a1a1a;
+    letter-spacing: 0.05em;
+    pointer-events: none;
+}
+
+.scroll-down span {
+    display: block;
+    animation: clignote 2.6s ease-in-out infinite;
+}
+
+@keyframes clignote {
+    0%, 100% { opacity: 0.1; }
+    50%      { opacity: 1; }
+}
+
+#intro-scroll {
+    position: absolute;
+    top: calc(36% + var(--taille-carte) * 0.1);   /* sous le bateau, grossi par la caméra */
+}
+
+#intro-relance {
+    position: fixed;
+    bottom: calc(var(--u) * 70);
+    z-index: 6;
+    opacity: 0;
+    transition: opacity 0.6s;
+}
+
+#intro-relance.visible {
+    opacity: 1;
+}
+
+/* les trois cartouches posés sur la mer : js/intro.js les fait défiler (y = leur centre) */
+.intro-bloc {
+    position: absolute;
+    top: 0;
+    width: calc(var(--u) * 420);
+    translate: 0 -50%;
+}
+
+#intro-1, #intro-3 { right: 9%; }
+#intro-2 { left: 9%; }
+#intro-2 .cartouche { transform: rotate(1.2deg); }
+
+.intro-bloc .cartouche {
+    font-size: calc(var(--u) * 22);
+    line-height: 1.45;
+}

@@ -6,7 +6,8 @@
     <title>Ma carte</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<!-- .intro : la carte et l'habillage restent cachés pendant l'intro (js/intro.js) -->
+<body class="intro">
     <header id="entete">
         <div class="cartouche">Nardis DELUGEAU</div>
         <div class="cartouche">Portfolio 2026</div>
@@ -72,6 +73,21 @@
         </div>
     </div>
     <div id="loupe"><img alt=""></div>
+    <!-- l'intro qu'on fait défiler : le bateau en mer, trois cartouches, puis l'île (js/intro.js).
+         retirée de la page une fois arrivé sur la carte -->
+    <div id="intro">
+        <div id="intro-bateau"><img src="public/symboles/myer-84.png" alt=""></div>
+        <p id="intro-scroll" class="scroll-down"><span>scroll down<br>↓</span></p>
+        <div class="intro-bloc" id="intro-1">
+            <div class="cartouche">Hi, I'm Nardis! I've sailed through quite a few places: literature, code, restaurants, farms, fashion shows. Never in a straight line.</div>
+        </div>
+        <div class="intro-bloc" id="intro-2">
+            <div class="cartouche">Apparently, the land ahead is split into four regions: Creativity, Code, Environment and Team Work.</div>
+        </div>
+        <div class="intro-bloc" id="intro-3">
+            <div class="cartouche">Every place on it is something I learned, built or simply love doing. Click on one to hear its story.</div>
+        </div>
+    </div>
     <!-- ordre important : ecran.js et points.js déclarent ce qu'utilisent les suivants -->
     <script src="js/ecran.js"></script>
     <script src="js/points.js"></script>
@@ -82,5 +98,7 @@
     <script src="js/rhumbs.js"></script>
     <script src="js/regions.js"></script>
     <script src="js/brume.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    <script src="js/intro.js"></script>
 </body>
 </html>

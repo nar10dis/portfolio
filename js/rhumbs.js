@@ -15,7 +15,8 @@ function traceRhumbs() {
         const opacite = i % 2 === 0 ? 0.45 : 0.25;
         traits += ligne(cx, cy, cx + Math.cos(angle) * loin, cy + Math.sin(angle) * loin, opacite);
     }
-    document.querySelectorAll('.cartouche').forEach(c => {
+    // pas les cartouches de l'intro : ils passent, ils ne sont pas posés sur la carte
+    document.querySelectorAll('.cartouche:not(#intro .cartouche)').forEach(c => {
         const r = c.getBoundingClientRect();
         // le centre du cartouche reste son centre une fois tourné
         const centre = versSite(r.left + r.width / 2, r.top + r.height / 2);
