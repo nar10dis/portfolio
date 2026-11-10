@@ -4,6 +4,10 @@ Interactive map portfolio. A background map (`map.png`) is covered with clickabl
 icons; each icon opens a side panel describing one experience (title, date,
 description, text, skills, image or scrolling image gallery).
 
+## Access
+
+Just click on https://nar10dis.github.io/portfolio/
+
 ## Run
 
 Static site, no build step. From the project root:
@@ -12,8 +16,7 @@ Static site, no build step. From the project root:
 python3 -m http.server
 ```
 
-Then open <http://localhost:8000>. Opening `index.html` as `file://` does not
-work: the panel texts are loaded with `fetch`.
+Then open <http://localhost:8000>.
 
 ## Layout
 
