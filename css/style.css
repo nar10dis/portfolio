@@ -212,6 +212,17 @@ body {
     touch-action: none;
 }
 
+/* brume par-dessus la carte, sous les cartouches et le panneau (js/brume.js).
+   le canvas est à demi-résolution, le navigateur l'étire */
+#brume {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3;
+}
+
 #monde.zoome {
     cursor: grab;
 }
