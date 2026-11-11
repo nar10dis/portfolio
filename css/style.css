@@ -662,6 +662,13 @@ body.intro :is(#rhumbs, #entete, #pied, #tableau, #contact) {
     pointer-events: none;
 }
 
+/* au doigt, le glissé fait avancer l'intro (js/intro.js) : le navigateur ne doit rien
+   en faire lui-même, sinon il reprend le geste et les pointermove s'arrêtent */
+body:is(.intro, .pose),
+body:is(.intro, .pose) * {
+    touch-action: none;
+}
+
 body:is(.intro, .pose) :is(#rhumbs, #entete, #pied, #tableau, #contact, .cartouche, .point, .bateau) {
     will-change: opacity;
 }

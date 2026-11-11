@@ -192,6 +192,10 @@
         fini = true;
         window.removeEventListener('wheel', molette, { capture: true });
         window.removeEventListener('keydown', clavier, true);
+        window.removeEventListener('pointerdown', appui, true);
+        window.removeEventListener('pointermove', glisse, { capture: true });
+        window.removeEventListener('pointerup', leve, true);
+        window.removeEventListener('pointercancel', leve, true);
         clearTimeout(attenteRelance);
         clearTimeout(attenteFin);
         relance.remove();
@@ -278,8 +282,57 @@
         e.preventDefault();
     }
 
+    // ---------- au doigt (téléphone, tablette) ----------
+    // le doigt qui monte fait avancer, comme la molette. on lit le geste dans le repère du site
+    // (versSite, js/ecran.js) : couché, monter dans le site, c'est glisser vers la droite de
+    // l'écran physique, et tout reste à l'horizontale. pris en capture sur window, comme la
+    // molette : pendant le tracé, js/zoom.js ne doit pas déplacer la carte sous le doigt
+    let doigt = null;   // { id, y, temps, vitesse } du doigt qui fait défiler
+
+    function appui(e) {
+        if (e.pointerType === 'mouse')
+            return;
+        e.stopPropagation();
+        if (doigt)
+            return;   // un seul doigt fait défiler
+        doigt = { id: e.pointerId, y: versSite(e.clientX, e.clientY).y, temps: e.timeStamp, vitesse: 0 };
+    }
+
+    function glisse(e) {
+        if (e.pointerType === 'mouse')
+            return;
+        e.stopPropagation();
+        if (!doigt || e.pointerId !== doigt.id)
+            return;
+        e.preventDefault();
+        const y = versSite(e.clientX, e.clientY).y;
+        const dt = Math.max(1, e.timeStamp - doigt.temps);
+        // une hauteur d'écran glissée = un peu moins de 3 étapes
+        const etapes = (doigt.y - y) / (tailleEcran().h * 0.35);
+        doigt.vitesse = etapes / dt;
+        doigt.y = y;
+        doigt.temps = e.timeStamp;
+        avance(etapes);
+    }
+
+    function leve(e) {
+        if (e.pointerType === 'mouse')
+            return;
+        e.stopPropagation();
+        if (!doigt || e.pointerId !== doigt.id)
+            return;
+        // un glissé lancé continue un peu sur son élan (pas si le doigt s'était arrêté)
+        if (e.timeStamp - doigt.temps < 80)
+            avance(clamp(-1.5, 1.5, doigt.vitesse * 250));
+        doigt = null;
+    }
+
     window.addEventListener('wheel', molette, { capture: true, passive: false });
     window.addEventListener('keydown', clavier, true);
+    window.addEventListener('pointerdown', appui, true);
+    window.addEventListener('pointermove', glisse, { capture: true, passive: false });
+    window.addEventListener('pointerup', leve, true);
+    window.addEventListener('pointercancel', leve, true);
     window.addEventListener('resize', () => {
         if (!posee)
             rendu(lecture.t);
